@@ -20,3 +20,8 @@ kotlin {
 tasks.test {
     useJUnitPlatform()
 }
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    compilerOptions {
+        freeCompilerArgs.add("-opt-in=kotlin.ExperimentalUnsignedTypes")
+    }
+}
