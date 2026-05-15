@@ -17,9 +17,8 @@ class Board {
     // Pre-alokowana historia stanu (zakładamy maksymalnie 1024 półruchy w partii)
     val stateHistory = Array(1024) { StateInfo() }
 
-    // Aktualna głębokość / numer półruchu od początku partii
-    var ply = 0
-
+    // Aktualny numer półruchu od początku partii (służy m.in. jako indeks do stateHistory)
+    var currentHalfMove = 0
     /**
      * Umieszcza figurę na szachownicy.
      * Aktualizuje jednocześnie bitboard odpowiedniego typu figury oraz jej koloru.
