@@ -1,5 +1,10 @@
 package board
 
+/**
+ * Zbiór narzędzi do niskopoziomowych operacji na 64-bitowych liczbach (ULong),
+ * które pełnią funkcję bitboardów (reprezentacji planszy).
+ * Odpowiada za bezpieczne ustawianie, gaszenie i sprawdzanie poszczególnych bitów.
+ */
 object Bitboard {
 
     /**
@@ -11,7 +16,7 @@ object Bitboard {
     }
 
     /**
-     * Zeruje bit na podanym indeksie `squareIndex` (ustawia na 0).
+     * Zeruje bit na podanym indeksie `squareIndex`.
      */
     fun clearBit(bitboard: ULong, squareIndex: Int): ULong {
         val number = (1UL shl squareIndex).inv()

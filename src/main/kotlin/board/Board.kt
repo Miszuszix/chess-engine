@@ -1,5 +1,11 @@
 package board
 
+/**
+ * Główna klasa reprezentująca stan szachownicy.
+ * Wykorzystuje architekturę Bitboardów dla maksymalnej wydajności.
+ * Zamiast alokować nowe obiekty przy każdym ruchu, przechowuje historię
+ * w pre-alokowanej tablicy [stateHistory] obsługiwanej indeksem [ply].
+ */
 class Board {
 
     // Bitboardy dla każdego typu figury (Pion = 0, skoczek = 1, Goniec = 2, Wieża = 3, Hetman = 4, Król = 5)
@@ -15,11 +21,8 @@ class Board {
     var ply = 0
 
     /**
-     * TODO: Zaimplementuj funkcję dodającą figurę na planszę.
-     *
-     * Podpowiedź: Musisz zaktualizować DWA bitboardy używając `Bitboard.setBit`:
-     * 1. Bitboard odpowiedniego typu figury (`pieces[piece]`)
-     * 2. Bitboard odpowiedniego koloru (`colors[color]`)
+     * Umieszcza figurę na szachownicy.
+     * Aktualizuje jednocześnie bitboard odpowiedniego typu figury oraz jej koloru.
      */
     fun setPiece(square: Int, piece: Int, color: Int) {
         pieces[piece] = Bitboard.setBit(pieces[piece], square)
@@ -27,10 +30,8 @@ class Board {
     }
 
     /**
-     * TODO: Zaimplementuj funkcję usuwającą figurę z planszy.
-     *
-     * Podpowiedź: Podobnie jak wyżej, zaktualizuj DWA bitboardy,
-     * ale tym razem używając `Bitboard.clearBit`.
+     * Zdejmuje figurę z szachownicy.
+     * Czyści odpowiedni bit zarówno w bitboardzie typu figury, jak i w bitboardzie koloru.
      */
     fun removePiece(square: Int, piece: Int, color: Int) {
         pieces[piece] = Bitboard.clearBit(pieces[piece], square)

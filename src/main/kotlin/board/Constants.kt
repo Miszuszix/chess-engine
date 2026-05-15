@@ -1,5 +1,10 @@
 package board
 
+/**
+ * Centralny "słownik" silnika szachowego.
+ * Przechowuje stałe wartości liczbowe dla kolorów, typów figur
+ * oraz indeksów 64 pól szachownicy w celu uniknięcia "magicznych liczb" w kodzie.
+ */
 object BoardConstants {
     // Colors
     const val colorWhite = 0
