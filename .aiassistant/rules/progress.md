@@ -27,9 +27,9 @@ apply: always
 
 - 🟢 **Ataki Skoczka:** Plik `KnightAttacks.kt` - Pre-computed tablica ataków z uwzględnieniem masek chroniących przed "wrap-around".
 - 🟢 **Ataki Króla:** Plik `KingAttacks.kt` - Pre-computed tablica ataków z maskami brzegowymi.
-- 🔴 **Ataki Pionów:** Pre-computing białych i czarnych ataków na ukos (`PawnAttacks.kt`).
-- 🔴 **Figury Liniowe (Ray Casting):** Implementacja promieni dla Wieży, Gońca i Hetmana.
-- 🔴 **Funkcja `isSquareAttacked`:** Ocenianie, czy dane pole jest aktualnie atakowane przez określony kolor.
+- 🟢 **Ataki Pionów:** Pre-computing białych i czarnych ataków na ukos (`PawnAttacks.kt`).
+- 🟢 **Figury Liniowe (Ray Casting):** Implementacja promieni dla Wieży, Gońca i Hetmana.
+- 🟢 **Funkcja `isSquareAttacked`:** Ocenianie, czy dane pole jest aktualnie atakowane przez określony kolor.
 - 🔴 **Generator Ruchów (Główny):** Właściwa logika tworząca listy zakodowanych ruchów (z użyciem obiektu `Move`) dla danej pozycji w oparciu o stan `Board.kt`.
 - 🔴 **Mechanizm Make / Unmake:** Funkcje `makeMove` i `unmakeMove` w klasie `Board`, zmieniające stan bitboardów i zarządzające stosem `StateInfo`.
 - 🔴 **Weryfikacja PERFT:** Test jednostkowy przechodzący głębokie węzły na pozycjach testowych (wymagane w 100% zgodności ze standardami przed pójściem dalej).

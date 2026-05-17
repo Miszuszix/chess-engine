@@ -50,6 +50,7 @@ używając masek brzegowych (np. `notAFile`, `notHFile`) do unikania zjawiska "w
 - ZAKAZ WYDAJNOŚCIOWY: Nie twórz instancji obiektów dla pojedynczych ruchów (np. `class Move(...)`).
 Ruchy muszą być bezwzględnie kodowane bitowo w pojedynczej zmiennej typu `Int` (32 bity).
 W funkcjach operujących na bitach i ruchu (jak `encode`) unikamy instrukcji warunkowych (branching) na rzecz logicznych masek (`and 0x3F`), by nie tracić cykli na branch prediction.
+- ZAKAZ ARYTMETYKI NA BITBOARDACH: Przy łączeniu masek (np. ataków) bezwzględnie używamy logicznego `or` zamiast matematycznego `+`, by uniknąć błędów przeniesienia (carry) w przypadku nakładających się bitów.
 - Git: Zawsze utrzymuj czystą historię (używamy poprawnego `.gitignore` bez udostępniania plików IDE). Proponuj nazwy commitów w standardzie Conventional Commits po każdym mniejszym kamieniu milowym.
 
 ## Workflow Mentor
