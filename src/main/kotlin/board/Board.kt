@@ -1,5 +1,17 @@
 package board
 
+import board.BoardConstants.pieceBishop
+import board.BoardConstants.pieceKnight
+import board.BoardConstants.piecePawn
+import board.BoardConstants.pieceRook
+import board.BoardConstants.pieceQueen
+import board.BoardConstants.pieceKing
+import movegen.PawnAttacks
+import movegen.KnightAttacks
+import movegen.KingAttacks
+import movegen.BishopAttacks
+import movegen.RookAttacks
+
 /**
  * Główna klasa reprezentująca stan szachownicy.
  * Wykorzystuje architekturę Bitboardów dla maksymalnej wydajności.
@@ -37,4 +49,37 @@ class Board {
         colors[color] = Bitboard.clearBit(colors[color], square)
     }
 
+    /**
+     * Sprawdza, czy dane pole jest atakowane przez figury podanego koloru.
+     * Wykorzystuje technikę "Odwróconej perspektywy" (Reverse POV).
+     *
+     * @param square Pole, które sprawdzamy (0..63)
+     * @param attackingColor Kolor, który potencjalnie atakuje pole (BoardConstants.colorWhite lub colorBlack)
+     * @return `true` jeśli pole jest atakowane, `false` w przeciwnym razie.
+     */
+    fun isSquareAttacked(square: Int, attackingColor: Int): Boolean {
+        // Zmienna przechowująca wszystkie figury na planszy (zajętość planszy dla Ray Castingu)
+        val occupancy = colors[BoardConstants.colorWhite] or colors[BoardConstants.colorBlack]
+
+        //Pawns
+        val reverseAttackingColor = attackingColor xor 1
+        var attacks = PawnAttacks.attacks[reverseAttackingColor][square] and (pieces[piecePawn] and colors[attackingColor])
+        if (attacks != 0UL) return true
+        
+        // Knights
+        attacks = KnightAttacks.attacks[square] and (pieces[pieceKnight] and colors[attackingColor])
+        if (attacks != 0UL) return true
+
+        //Kings
+        attacks = KingAttacks.attacks[square] and (pieces[pieceKing] and colors[attackingColor])
+        if (attacks != 0UL) return true
+
+        //Bishops and Queen
+        attacks = BishopAttacks.getAttacks(square, occupancy) and (pieces[pieceBishop] or pieces[pieceQueen]) and colors[attackingColor]
+        if (attacks != 0UL) return true
+
+        //Rooks and Queens
+        attacks = RookAttacks.getAttacks(square, occupancy) and (pieces[pieceRook] or pieces[pieceQueen]) and colors[attackingColor]
+        return attacks != 0UL
+    }
 }
