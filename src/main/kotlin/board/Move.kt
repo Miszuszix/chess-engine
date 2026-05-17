@@ -20,7 +20,7 @@ object Move {
     //•
     //Bity 12-14 (3 bity): Jaka figura się rusza (0-5, z Twojego Constants.kt)
     //•
-    //Bity 15-17 (3 bity): Do jakiej figury promujemy (0-5, domyślnie np. 0 jeśli brak)
+    //Bity 15-17 (3 bity): Do jakiej figury promujemy (1-4, domyślnie 0 jeśli brak promocji)
     //•
     //Bit 18 (1 bit): Flaga bicia (Capture)
     //•

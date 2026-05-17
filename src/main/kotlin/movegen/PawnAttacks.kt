@@ -19,8 +19,8 @@ object PawnAttacks {
 
     init {
         for (square in 0..63) {
-            attacks[BoardConstants.colorWhite][square] = maskPawnAttacks(BoardConstants.colorWhite, square)
-            attacks[BoardConstants.colorBlack][square] = maskPawnAttacks(BoardConstants.colorBlack, square)
+            attacks[BoardConstants.COLOR_WHITE][square] = maskPawnAttacks(BoardConstants.COLOR_WHITE, square)
+            attacks[BoardConstants.COLOR_BLACK][square] = maskPawnAttacks(BoardConstants.COLOR_BLACK, square)
         }
     }
 
@@ -32,7 +32,7 @@ object PawnAttacks {
      * Podpowiedź:
      * 1. Utwórz zmienną `bitboard` i ustaw na niej jeden bit na indeksie `square`.
      * 2. Utwórz zmienną `attacksBoard = 0UL`.
-     * 3. Sprawdź kolor (użyj `if (color == BoardConstants.colorWhite)`).
+     * 3. Sprawdź kolor (użyj `if (color == BoardConstants.COLOR_WHITE)`).
      * 4. Dla białych:
      *    - Atak w lewo-skos (North-West): `bitboard and notAFile shl 7` (dodaj to do attacksBoard używając `or`).
      *    - Atak w prawo-skos (North-East): `bitboard and notHFile shl 9`.
@@ -47,11 +47,11 @@ object PawnAttacks {
         
         bitboard = Bitboard.setBit(bitboard, square)
 
-        if (color == BoardConstants.colorWhite){
+        if (color == BoardConstants.COLOR_WHITE){
             attacksBoard = attacksBoard or ((bitboard and notAFile) shl 7)
             attacksBoard = attacksBoard or ((bitboard and notHFile) shl 9)
         }
-        if (color == BoardConstants.colorBlack){
+        if (color == BoardConstants.COLOR_BLACK){
             attacksBoard = attacksBoard or ((bitboard and notAFile) shr 7)
             attacksBoard = attacksBoard or ((bitboard and notHFile) shr 9)
         }

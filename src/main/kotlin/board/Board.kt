@@ -1,11 +1,11 @@
 package board
 
-import board.BoardConstants.pieceBishop
-import board.BoardConstants.pieceKnight
-import board.BoardConstants.piecePawn
-import board.BoardConstants.pieceRook
-import board.BoardConstants.pieceQueen
-import board.BoardConstants.pieceKing
+import board.BoardConstants.PIECE_BISHOP
+import board.BoardConstants.PIECE_KNIGHT
+import board.BoardConstants.PIECE_PAWN
+import board.BoardConstants.PIECE_ROOK
+import board.BoardConstants.PIECE_QUEEN
+import board.BoardConstants.PIECE_KING
 import movegen.PawnAttacks
 import movegen.KnightAttacks
 import movegen.KingAttacks
@@ -54,32 +54,32 @@ class Board {
      * Wykorzystuje technikę "Odwróconej perspektywy" (Reverse POV).
      *
      * @param square Pole, które sprawdzamy (0..63)
-     * @param attackingColor Kolor, który potencjalnie atakuje pole (BoardConstants.colorWhite lub colorBlack)
+     * @param attackingColor Kolor, który potencjalnie atakuje pole (BoardConstants.COLOR_WHITE lub COLOR_BLACK)
      * @return `true` jeśli pole jest atakowane, `false` w przeciwnym razie.
      */
     fun isSquareAttacked(square: Int, attackingColor: Int): Boolean {
         // Zmienna przechowująca wszystkie figury na planszy (zajętość planszy dla Ray Castingu)
-        val occupancy = colors[BoardConstants.colorWhite] or colors[BoardConstants.colorBlack]
+        val occupancy = colors[BoardConstants.COLOR_WHITE] or colors[BoardConstants.COLOR_BLACK]
 
         //Pawns
         val reverseAttackingColor = attackingColor xor 1
-        var attacks = PawnAttacks.attacks[reverseAttackingColor][square] and (pieces[piecePawn] and colors[attackingColor])
+        var attacks = PawnAttacks.attacks[reverseAttackingColor][square] and (pieces[PIECE_PAWN] and colors[attackingColor])
         if (attacks != 0UL) return true
         
         // Knights
-        attacks = KnightAttacks.attacks[square] and (pieces[pieceKnight] and colors[attackingColor])
+        attacks = KnightAttacks.attacks[square] and (pieces[PIECE_KNIGHT] and colors[attackingColor])
         if (attacks != 0UL) return true
 
         //Kings
-        attacks = KingAttacks.attacks[square] and (pieces[pieceKing] and colors[attackingColor])
+        attacks = KingAttacks.attacks[square] and (pieces[PIECE_KING] and colors[attackingColor])
         if (attacks != 0UL) return true
 
         //Bishops and Queen
-        attacks = BishopAttacks.getAttacks(square, occupancy) and (pieces[pieceBishop] or pieces[pieceQueen]) and colors[attackingColor]
+        attacks = BishopAttacks.getAttacks(square, occupancy) and (pieces[PIECE_BISHOP] or pieces[PIECE_QUEEN]) and colors[attackingColor]
         if (attacks != 0UL) return true
 
         //Rooks and Queens
-        attacks = RookAttacks.getAttacks(square, occupancy) and (pieces[pieceRook] or pieces[pieceQueen]) and colors[attackingColor]
+        attacks = RookAttacks.getAttacks(square, occupancy) and (pieces[PIECE_ROOK] or pieces[PIECE_QUEEN]) and colors[attackingColor]
         return attacks != 0UL
     }
 }
