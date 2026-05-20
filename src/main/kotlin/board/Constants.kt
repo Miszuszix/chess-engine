@@ -90,4 +90,15 @@ object BoardConstants {
     const val SQUARE_F8 = 61
     const val SQUARE_G8 = 62
     const val SQUARE_H8 = 63
+
+    // Tablica masek do bezwarunkowej aktualizacji praw do roszady.
+    // Wartość 15 (1111) oznacza brak zmiany. Inne wartości gaszą odpowiednie bity.
+    val CASTLING_RIGHTS_UPDATE = IntArray(64) { 15 }.apply {
+        this[SQUARE_A1] = 13
+        this[SQUARE_H1] = 14
+        this[SQUARE_E1] = 12
+        this[SQUARE_A8] = 7
+        this[SQUARE_H8] = 11
+        this[SQUARE_E8] = 3
+    }
 }

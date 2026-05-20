@@ -27,7 +27,7 @@ Generujemy wszystkie możliwe ruchy, a legalność sprawdzamy dopiero po wykonan
 używając masek brzegowych (np. `notAFile`, `notHFile`) do unikania zjawiska "wrap-around".
 - Generowanie figur liniowych: Będziemy używać prostszego podejścia promieni (Ray Casting / Shift-based) zamiast Magic Bitboards, co jest wystarczające na nasz cel ELO.
 - Weryfikacja: Wymagane bezbłędne przejście testów węzłów `Perft`.
-- Cofanie ruchów (Make/Unmake): ZAKAZ używania słowników/Map. Prawa do roszady, en-passant i regułę 50 ruchów trzymamy w lekkiej klasie `StateInfo` ułożonej w płaskiej tablicy lub na stosie (Stack) indeksowanym numerem półruchu (ply).
+- Cofanie ruchów (Make/Unmake): ZAKAZ używania słowników/Map. Prawa do roszady, en-passant i regułę 50 ruchów trzymamy w lekkiej klasie `StateInfo` ułożonej w płaskiej tablicy lub na stosie (Stack) indeksowanym numerem półruchu (ply). Aktualizację praw do roszady wykonujemy bezwarunkowo za pomocą pre-kalkulowanych tablic z maskami bitowymi (unikamy if-ów).
 
 ## Search and AI
 - Główny algorytm: Minimax z odcięciami Alpha-Beta.
