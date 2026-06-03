@@ -29,13 +29,19 @@ import board.BoardConstants.SQUARE_G8
 object MoveGenerator {
 
     /**
-     * Zoptymalizowana lista ruchów oparta na typach prostych.
-     * Unikamy dzięki temu narzutu pamięciowego standardowego `ArrayList<Int>`.
+     * Zoptymalizowana lista ruchów oparta na tablicy typów prostych (Int).
+     * Unika narzutu pamięciowego i kosztów alokacji związanych z użyciem standardowego `ArrayList<Int>`.
      */
     class MoveList {
+        /** Tablica przechowująca zakodowane ruchy (max 256 ruchów w jednej pozycji). */
         val moves = IntArray(256)
+        /** Aktualna liczba wygenerowanych ruchów. */
         var count = 0
 
+        /**
+         * Dodaje nowy zakodowany ruch do listy.
+         * @param move 32-bitowa liczba całkowita reprezentująca ruch.
+         */
         fun add(move: Int) {
             moves[count] = move
             count++
@@ -43,11 +49,11 @@ object MoveGenerator {
     }
 
     /**
-     * Główna funkcja generująca ruchy dla danego koloru.
+     * Główna funkcja generująca ruchy dla danego koloru w danej pozycji.
      * 
-     * @param board Aktualny stan szachownicy
-     * @param color Kolor, dla którego generujemy ruchy (BoardConstants.COLOR_WHITE lub COLOR_BLACK)
-     * @return Zapełniony obiekt MoveList
+     * @param board Aktualny stan szachownicy.
+     * @param color Kolor, dla którego generujemy ruchy ([BoardConstants.COLOR_WHITE] lub [BoardConstants.COLOR_BLACK]).
+     * @return Zapełniony obiekt [MoveList] zawierający wszystkie pseudo-legalne ruchy.
      */
     fun generateMoves(board: Board, color: Int): MoveList {
         val moveList = MoveList()
@@ -85,8 +91,14 @@ object MoveGenerator {
 
     /**
      * Uniwersalna, wbudowana (inline) funkcja do generowania ruchów dla figur skokowych i liniowych.
-     * Słowo `inline` gwarantuje, że przekazanie lambdy `getAttacks` nie zaalokuje w pamięci żadnego
-     * obiektu zamknięcia (closure), co jest krytyczne dla zachowania wydajności silnika.
+     * Użycie słowa `inline` zapobiega alokacji obiektu zamknięcia (closure) dla lambdy [getAttacks].
+     *
+     * @param pieceType Typ figury, dla której generujemy ruchy.
+     * @param pieceBitboard Bitboard przechowujący pozycje wszystkich figur danego typu.
+     * @param ourPieces Bitboard ze wszystkimi figurami gracza, który aktualnie się porusza.
+     * @param enemyPieces Bitboard ze wszystkimi figurami przeciwnika.
+     * @param moveList Lista, do której dodawane są wygenerowane ruchy.
+     * @param getAttacks Funkcja dostarczająca maskę ataków dla danego pola.
      */
     private inline fun generatePieceMoves(
         pieceType: Int,
@@ -116,6 +128,15 @@ object MoveGenerator {
         }
     }
 
+    /**
+     * Generuje specjalne ruchy pionów (pchnięcia, bicia, promocje, en passant).
+     *
+     * @param board Stan szachownicy.
+     * @param color Kolor pionów.
+     * @param enemyPieces Bitboard z figurami przeciwnika.
+     * @param occupancy Bitboard ze wszystkimi zajętymi polami.
+     * @param moveList Lista, do której dodawane są ruchy.
+     */
     private fun generatePawnMoves(
         board: Board,
         color: Int,
@@ -176,6 +197,14 @@ object MoveGenerator {
         }
     }
 
+    /**
+     * Dodaje cztery ruchy promocyjne do listy (Hetman, Wieża, Goniec, Skoczek).
+     *
+     * @param sourceSquare Pole startowe piona.
+     * @param targetSquare Pole docelowe (ostatnia linia).
+     * @param isCapture Czy promocja połączona jest z biciem.
+     * @param moveList Lista, do której dodawane są ruchy.
+     */
     private fun addPromotionMoves(sourceSquare: Int, targetSquare: Int, isCapture: Boolean, moveList: MoveList) {
         moveList.add(Move.encode(sourceSquare, targetSquare, BoardConstants.PIECE_PAWN, promotedPiece = BoardConstants.PIECE_QUEEN, isCapture = isCapture))
         moveList.add(Move.encode(sourceSquare, targetSquare, BoardConstants.PIECE_PAWN, promotedPiece = BoardConstants.PIECE_ROOK, isCapture = isCapture))
@@ -183,6 +212,14 @@ object MoveGenerator {
         moveList.add(Move.encode(sourceSquare, targetSquare, BoardConstants.PIECE_PAWN, promotedPiece = BoardConstants.PIECE_KNIGHT, isCapture = isCapture))
     }
 
+    /**
+     * Generuje możliwe roszady dla króla.
+     *
+     * @param board Stan szachownicy (do sprawdzania ataków).
+     * @param color Kolor gracza.
+     * @param occupancy Bitboard ze wszystkimi zajętymi polami.
+     * @param moveList Lista, do której dodawane są ruchy.
+     */
     private fun generateCastlingMoves(board: Board, color: Int, occupancy: ULong, moveList: MoveList) {
         val castlingRights = board.stateHistory[board.currentHalfMove].castlingRights
 

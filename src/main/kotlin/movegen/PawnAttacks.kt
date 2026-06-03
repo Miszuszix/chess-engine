@@ -5,11 +5,16 @@ import board.BoardConstants
 
 /**
  * Generator ataków Pionów.
- * Z uwagi na to, że piony biją tylko do przodu (zależnie od koloru),
- * tablica ataków jest dwuwymiarowa: attacks [kolor][pole].
+ * Oblicza z góry wszystkie możliwe ataki (bicia na ukos) dla każdego koloru i każdego z 64 pól.
+ * Wyniki są przechowywane w tablicy dla szybkiego dostępu.
  */
 object PawnAttacks {
 
+    /** 
+     * Dwuwymiarowa tablica przechowująca pre-kalkulowane maski ataków.
+     * Pierwszy wymiar to kolor ([BoardConstants.COLOR_WHITE] lub [BoardConstants.COLOR_BLACK]).
+     * Drugi wymiar to indeks pola (0..63).
+     */
     val attacks = Array(2) { ULongArray(64) }
 
     private const val notAFile = 0xFEFEFEFEFEFEFEFEUL
@@ -22,6 +27,15 @@ object PawnAttacks {
         }
     }
 
+    /**
+     * Oblicza ataki piona dla danego koloru i pola.
+     * Uwzględnia maski chroniące przed zawijaniem ruchów (wrap-around) na brzegach planszy.
+     * Ta funkcja generuje *tylko* ataki (bicia), a nie ruchy do przodu.
+     *
+     * @param color Kolor piona.
+     * @param square Indeks pola startowego (0..63).
+     * @return Maska bitowa potencjalnych pól docelowych ataku.
+     */
     private fun maskPawnAttacks(color: Int, square: Int): ULong {
         var attacksBoard = 0UL
         var bitboard = 0UL

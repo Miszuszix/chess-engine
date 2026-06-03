@@ -9,6 +9,7 @@ import board.Bitboard
  */
 object KingAttacks {
 
+    /** Tablica przechowująca pre-kalkulowane maski ataków dla każdego z 64 pól. */
     val attacks = ULongArray(64)
 
     private const val notAFile = 0xFEFEFEFEFEFEFEFEUL
@@ -20,6 +21,13 @@ object KingAttacks {
         }
     }
 
+    /**
+     * Oblicza ataki Króla z danego pola.
+     * Uwzględnia maski chroniące przed zawijaniem ruchów (wrap-around) na brzegach planszy.
+     *
+     * @param square Indeks pola startowego (0..63).
+     * @return Maska bitowa potencjalnych pól docelowych.
+     */
     private fun maskKingAttacks(square: Int): ULong {
         var attacksBoard = 0UL
         var bitboard = 0UL

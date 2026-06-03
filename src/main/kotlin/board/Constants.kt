@@ -6,16 +6,25 @@ package board
  * oraz indeksów 64 pól szachownicy w celu uniknięcia "magicznych liczb" w kodzie.
  */
 object BoardConstants {
+    /** Identyfikator koloru białego. */
     const val COLOR_WHITE = 0
+    /** Identyfikator koloru czarnego. */
     const val COLOR_BLACK = 1
 
+    /** Identyfikator typu figury - Pion. */
     const val PIECE_PAWN = 0
+    /** Identyfikator typu figury - Skoczek. */
     const val PIECE_KNIGHT = 1
+    /** Identyfikator typu figury - Goniec. */
     const val PIECE_BISHOP = 2
+    /** Identyfikator typu figury - Wieża. */
     const val PIECE_ROOK = 3
+    /** Identyfikator typu figury - Hetman. */
     const val PIECE_QUEEN = 4
+    /** Identyfikator typu figury - Król. */
     const val PIECE_KING = 5
 
+    // Indeksy pól szachownicy od A1 do H8 (0..63)
     const val SQUARE_A1 = 0
     const val SQUARE_B1 = 1
     const val SQUARE_C1 = 2
@@ -88,6 +97,11 @@ object BoardConstants {
     const val SQUARE_G8 = 62
     const val SQUARE_H8 = 63
 
+    /**
+     * Tablica masek do bezwarunkowej aktualizacji praw do roszady.
+     * Wartość 15 (1111) oznacza brak zmiany. Inne wartości gaszą odpowiednie bity.
+     * Używana podczas ruchu, aby np. ruch króla wyłączył roszady, lub wieży odpowiednią stronę.
+     */
     val CASTLING_RIGHTS_UPDATE = IntArray(64) { 15 }.apply {
         this[SQUARE_A1] = 13
         this[SQUARE_H1] = 14
