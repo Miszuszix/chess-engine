@@ -31,8 +31,8 @@ apply: always
 - 🟢 **Figury Liniowe (Ray Casting):** Implementacja promieni dla Wieży, Gońca i Hetmana.
 - 🟢 **Funkcja `isSquareAttacked`:** Ocenianie, czy dane pole jest aktualnie atakowane przez określony kolor.
 - 🟢 **Generator Ruchów (Główny):** Właściwa logika tworząca listy zakodowanych ruchów (z użyciem obiektu `Move`) dla danej pozycji w oparciu o stan `Board.kt`.
-- 🟡 **Mechanizm Make / Unmake:** Funkcja `makeMove` jest w 80% gotowa (obsługa bić, podwójnego skoku piona, en passant i fizycznego ruchu roszady). Pozostało: dokończenie promocji piona, aktualizacja praw do roszady z użyciem masek oraz cała funkcja `unmakeMove`.
-- 🔴 **Weryfikacja PERFT:** Test jednostkowy przechodzący głębokie węzły na pozycjach testowych (wymagane w 100% zgodności ze standardami przed pójściem dalej).
+- 🟢 **Mechanizm Make / Unmake:** Funkcje `makeMove` i `unmakeMove` są w 100% gotowe i udokumentowane.
+- 🟡 **Weryfikacja PERFT:** Test jednostkowy przechodzący głębokie węzły na pozycjach testowych (wymagane w 100% zgodności ze standardami przed pójściem dalej).
 
 ---
 

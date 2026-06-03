@@ -167,6 +167,73 @@ class Board {
     }
 
     /**
+     * Cofa podany ruch na planszy (Unmake Move).
+     * Odtwarza stan bitboardów oraz cofa się w historii stanu.
+     *
+     * @param move Skompresowany kod ruchu, który właśnie cofamy.
+     */
+    fun unmakeMove(move: Int) {
+        sideToMove = sideToMove xor 1
+
+        val source = Move.getSourceSquare(move)
+        val target = Move.getTargetSquare(move)
+        val piece = Move.getPiece(move)
+        val isCapture = Move.isCapture(move)
+        val isEnPassant = Move.isEnPassant(move)
+        val isCastling = Move.isCastling(move)
+        val promotedPiece = Move.getPromotedPiece(move)
+
+        val capturedPiece = stateHistory[currentHalfMove].capturedPiece
+
+        currentHalfMove--
+
+        // Cofnięcie fizycznego ruchu (w tym zniwelowanie promocji piona)
+        if(promotedPiece != 0){
+            removePiece(target, promotedPiece, sideToMove)
+            setPiece(source, PIECE_PAWN, sideToMove)
+        }else{
+            removePiece(target, piece, sideToMove)
+            setPiece(source, piece, sideToMove)
+        }
+
+        // Przywrócenie zbitej figury przeciwnika
+        if(isCapture && !isEnPassant){
+            setPiece(target, capturedPiece, sideToMove xor 1)
+        }
+
+        // Przywrócenie piona po biciu w przelocie (En Passant)
+        if(isCapture && isEnPassant){
+            if(sideToMove == BoardConstants.COLOR_WHITE){
+                setPiece(target - 8, BoardConstants.PIECE_PAWN, BoardConstants.COLOR_BLACK)
+            }else{
+                setPiece(target + 8, BoardConstants.PIECE_PAWN, BoardConstants.COLOR_WHITE)
+            }
+        }
+
+        // Cofnięcie przemieszczenia wieży przy roszadzie (król został już cofnięty wyżej)
+        if(isCastling){
+            when(target){
+                BoardConstants.SQUARE_G1 ->{
+                    removePiece(BoardConstants.SQUARE_F1, BoardConstants.PIECE_ROOK, sideToMove)
+                    setPiece(BoardConstants.SQUARE_H1, BoardConstants.PIECE_ROOK, sideToMove)
+                }
+                BoardConstants.SQUARE_C1 ->{
+                    removePiece(BoardConstants.SQUARE_D1, BoardConstants.PIECE_ROOK, sideToMove)
+                    setPiece(BoardConstants.SQUARE_A1, BoardConstants.PIECE_ROOK, sideToMove)
+                }
+                BoardConstants.SQUARE_G8 ->{
+                    removePiece(BoardConstants.SQUARE_F8, BoardConstants.PIECE_ROOK, sideToMove)
+                    setPiece(BoardConstants.SQUARE_H8, BoardConstants.PIECE_ROOK, sideToMove)
+                }
+                BoardConstants.SQUARE_C8 ->{
+                    removePiece(BoardConstants.SQUARE_D8, BoardConstants.PIECE_ROOK, sideToMove)
+                    setPiece(BoardConstants.SQUARE_A8, BoardConstants.PIECE_ROOK, sideToMove)
+                }
+            }
+        }
+    }
+
+    /**
      * Sprawdza, czy dane pole jest atakowane przez figury podanego koloru.
      * Wykorzystuje technikę "Odwróconej perspektywy" (Reverse POV).
      *
