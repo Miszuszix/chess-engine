@@ -20,24 +20,32 @@ import movegen.RookAttacks
  */
 class Board {
 
-    // Bitboardy dla każdego typu figury (Pion = 0, skoczek = 1, Goniec = 2, Wieża = 3, Hetman = 4, Król = 5)
+    /** Tablice przechowujące bitboardy dla każdego typu figury (0 = Pion, ..., 5 = Król). */
     val pieces = ULongArray(6)
 
-    // Bitboardy dla kolorów (Biały = 0, Czarny = 1)
+    /** Tablice przechowujące bitboardy dla każdego koloru (0 = Białe, 1 = Czarne). */
     val colors = ULongArray(2)
 
-    // Pre-alokowana historia stanu (zakładamy maksymalnie 1024 półruchy w partii)
+    /** 
+     * Pre-alokowana tablica historii stanu gry. 
+     * Służy do zapamiętywania nieodwracalnych zmian (prawa do roszady, en passant, zasada 50 ruchów) 
+     * w celu wycofywania ruchów bez alokacji pamięci (Unmake Move).
+     */
     val stateHistory = Array(1024) { StateInfo() }
 
-    // Aktualny numer półruchu od początku partii (służy m.in. jako indeks do stateHistory)
+    /** Aktualny numer półruchu od początku partii. Służy jako wskaźnik głębokości i indeks do [stateHistory]. */
     var currentHalfMove = 0
 
-    // Kto wykonuje teraz ruch (0 = Białe, 1 = Czarne)
+    /** Flaga określająca kolor gracza, który aktualnie ma posunięcie (0 = Białe, 1 = Czarne). */
     var sideToMove = BoardConstants.COLOR_WHITE
 
     /**
      * Umieszcza figurę na szachownicy.
      * Aktualizuje jednocześnie bitboard odpowiedniego typu figury oraz jej koloru.
+     *
+     * @param square Indeks docelowego pola (0..63).
+     * @param piece  Typ figury (np. [BoardConstants.PIECE_PAWN]).
+     * @param color  Kolor figury ([BoardConstants.COLOR_WHITE] lub [BoardConstants.COLOR_BLACK]).
      */
     fun setPiece(square: Int, piece: Int, color: Int) {
         pieces[piece] = Bitboard.setBit(pieces[piece], square)
@@ -47,6 +55,10 @@ class Board {
     /**
      * Zdejmuje figurę z szachownicy.
      * Czyści odpowiedni bit zarówno w bitboardzie typu figury, jak i w bitboardzie koloru.
+     *
+     * @param square Indeks pola, z którego usuwamy figurę (0..63).
+     * @param piece  Typ figury do usunięcia.
+     * @param color  Kolor figury do usunięcia.
      */
     fun removePiece(square: Int, piece: Int, color: Int) {
         pieces[piece] = Bitboard.clearBit(pieces[piece], square)
@@ -54,8 +66,10 @@ class Board {
     }
 
     /**
-     * Wykonuje ruch na planszy (Make Move).
-     * Aktualizuje bitboardy, przesuwa historię stanu (ply) i zmienia turę.
+     * Wykonuje podany ruch na planszy modyfikując jej stan (Make Move).
+     * Aktualizuje bitboardy, zapisuje nowy stan w historii ([stateHistory]) i przekazuje turę przeciwnikowi.
+     *
+     * @param move Skompresowany, 32-bitowy kod ruchu zawierający informacje o polu startowym, docelowym i flagach specjalnych.
      */
     fun makeMove(move: Int) {
         val source = Move.getSourceSquare(move)
@@ -67,30 +81,24 @@ class Board {
         val isCastling = Move.isCastling(move)
         val promotedPiece = Move.getPromotedPiece(move)
 
-        // Pobieramy aktualny stan z historii i "czyste pudełko" na nowy stan
         val currentState = stateHistory[currentHalfMove]
         val nextState = stateHistory[currentHalfMove + 1]
 
-        // 1. Klonowanie stanu nieodwracalnego do nowego "pudełka"
+        // 1. Klonowanie stanu nieodwracalnego
         nextState.castlingRights = currentState.castlingRights
         nextState.halfMoveClock = currentState.halfMoveClock + 1
-        nextState.enPassantSquare = -1 // Domyślnie brak pola do bicia w przelocie w nowym ruchu
+        nextState.enPassantSquare = -1
         nextState.capturedPiece = -1
 
-        // 2. Resetujemy licznik 50 ruchów jeśli ruch to bicie lub pchnięcie piona
+        // 2. Resetowanie reguły 50 ruchów
         if (isCapture || piece == BoardConstants.PIECE_PAWN) {
             nextState.halfMoveClock = 0
         }
 
-        // 3. Zwiększamy indeks głębokości (wchodzimy głębiej w drzewo/partię)
+        // 3. Zwiększenie głębokości (ply)
         currentHalfMove++
 
-        // TODO: 2. Obsługa bicia STANDARDOWEGO (isCapture == true ORAZ isEnPassant == false).
-        // Jeśli to zwykłe bicie, musisz:
-        // a) Znaleźć, jaka figura przeciwnika stała na polu 'target'.
-        //    (Podpowiedź: przeiteruj od 0 do 5 i sprawdź za pomocą Bitboard.getBit, w której tablicy pieces na polu 'target' jest 1).
-        // b) Zapisać typ zbitej figury do `nextState.capturedPiece`.
-        // c) Zdjąć przeciwnikowi tę figurę z pola 'target'.
+        // 4. Obsługa bicia standardowego
         if(isCapture && !isEnPassant){
             for(capturedPiece in 0..5){
                 if(Bitboard.getBit(pieces[capturedPiece], target)){
@@ -100,6 +108,7 @@ class Board {
             }
         }
 
+        // 5. Obsługa bicia w przelocie (En Passant)
         if(isCapture && isEnPassant){
             nextState.capturedPiece = BoardConstants.PIECE_PAWN
             if (sideToMove == BoardConstants.COLOR_WHITE) {
@@ -109,12 +118,11 @@ class Board {
             }
         }
 
-        // TODO: 1. Zdejmij figurę 'piece' z pola 'source' i postaw ją na polu 'target'
-        // dla aktualnego koloru (zmienna 'sideToMove'). Wykorzystaj swoje metody z tej klasy!
-        //zmieniłem kolejność tego bo najpierw zdejmiemy figure przeciwnika a potem dopiero przesuniemy naszą. Inaczej byśmy zdjęli własną figurę
+        // 6. Fizyczne przesunięcie figury
         removePiece(source, piece, sideToMove)
         setPiece(target, piece, sideToMove)
 
+        // 7. Obsługa roszady
         if (isCastling){
             when(target){
                 BoardConstants.SQUARE_G1 -> {
@@ -136,11 +144,7 @@ class Board {
             }
         }
 
-
-        // TODO: 3. Obsługa podwójnego skoku piona (isDoublePawnPush).
-        // Jeśli to prawda, musisz udostępnić pole do bicia w przelocie:
-        // Ustaw `nextState.enPassantSquare`. Pole to znajduje się dokładnie
-        // pomiędzy polem startowym a docelowym. Zastanów się, jak to łatwo wyliczyć matematycznie (np. średnia arytmetyczna?).
+        // 8. Ustawienie pola En Passant po podwójnym skoku piona
         if(isDoublePawnPush){
             if(sideToMove == BoardConstants.COLOR_WHITE){
                 nextState.enPassantSquare = source + 8
@@ -149,21 +153,16 @@ class Board {
             }
         }
 
-        // TODO: 5. Promocja piona.
-        // Sprawdź, czy `promotedPiece` jest różne od 0 (zakładając, że 0 to brak promocji).
-        // Jeśli tak, to w poprzednich linijkach nasz silnik fizycznie postawił Piona na polu `target`.
-        // Musisz teraz zdjąć tego Piona z `target` i postawić tam nową figurę (`promotedPiece`).
+        // 9. Obsługa promocji
+        if(promotedPiece != 0){
+            removePiece(target, PIECE_PAWN, sideToMove)
+            setPiece(target, promotedPiece, sideToMove)
+        }
 
+        // 10. Aktualizacja praw do roszady za pomocą masek bitowych
+        nextState.castlingRights = nextState.castlingRights and (BoardConstants.CASTLING_RIGHTS_UPDATE[source] and BoardConstants.CASTLING_RIGHTS_UPDATE[target])
 
-        // TODO: 6. Aktualizacja praw do roszady.
-        // Zaktualizuj `nextState.castlingRights`.
-        // Użyj logicznego `and` na aktualnej wartości zmiennej oraz odpowiednich maskach
-        // z tablicy `BoardConstants.CASTLING_RIGHTS_UPDATE` dla pola `source` i `target`.
-        // Np.: nextState.castlingRights = nextState.castlingRights and maska1 and maska2
-
-        
-        // TODO: 4. Zmień turę gracza.
-        // Użyj operatora XOR (`xor 1`) na zmiennej `sideToMove`, aby szybko przełączyć kolor.
+        // 11. Zmiana tury
         sideToMove = sideToMove xor 1
     }
 
@@ -172,31 +171,25 @@ class Board {
      * Wykorzystuje technikę "Odwróconej perspektywy" (Reverse POV).
      *
      * @param square Pole, które sprawdzamy (0..63)
-     * @param attackingColor Kolor, który potencjalnie atakuje pole (BoardConstants.COLOR_WHITE lub COLOR_BLACK)
+     * @param attackingColor Kolor, który potencjalnie atakuje pole ([BoardConstants.COLOR_WHITE] lub [BoardConstants.COLOR_BLACK])
      * @return `true` jeśli pole jest atakowane, `false` w przeciwnym razie.
      */
     fun isSquareAttacked(square: Int, attackingColor: Int): Boolean {
-        // Zmienna przechowująca wszystkie figury na planszy (zajętość planszy dla Ray Castingu)
         val occupancy = colors[BoardConstants.COLOR_WHITE] or colors[BoardConstants.COLOR_BLACK]
 
-        //Pawns
         val reverseAttackingColor = attackingColor xor 1
         var attacks = PawnAttacks.attacks[reverseAttackingColor][square] and (pieces[PIECE_PAWN] and colors[attackingColor])
         if (attacks != 0UL) return true
         
-        // Knights
         attacks = KnightAttacks.attacks[square] and (pieces[PIECE_KNIGHT] and colors[attackingColor])
         if (attacks != 0UL) return true
 
-        //Kings
         attacks = KingAttacks.attacks[square] and (pieces[PIECE_KING] and colors[attackingColor])
         if (attacks != 0UL) return true
 
-        //Bishops and Queen
         attacks = BishopAttacks.getAttacks(square, occupancy) and (pieces[PIECE_BISHOP] or pieces[PIECE_QUEEN]) and colors[attackingColor]
         if (attacks != 0UL) return true
 
-        //Rooks and Queens
         attacks = RookAttacks.getAttacks(square, occupancy) and (pieces[PIECE_ROOK] or pieces[PIECE_QUEEN]) and colors[attackingColor]
         return attacks != 0UL
     }
