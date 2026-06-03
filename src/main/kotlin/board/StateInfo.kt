@@ -6,8 +6,8 @@ package board
  * Utworzymy tablicę tych obiektów, by unikać alokacji pamięci podczas gry.
  */
 class StateInfo {
-    var castlingRights: Int = 0 // 4 bity: np. 1 = biała krótka, 2 = biała długa, 4 = czarna krótka, 8 = czarna długa
-    var enPassantSquare: Int = -1 // -1 oznacza brak pola do bicia w przelocie
-    var halfMoveClock: Int = 0 // Licznik do reguły 50 ruchów
-    var capturedPiece: Int = -1 // Jaka figura została zbita (żeby wiedzieć, co przywrócić na planszę)
+    var castlingRights: Int = 0
+    var enPassantSquare: Int = -1
+    var halfMoveClock: Int = 0
+    var capturedPiece: Int = -1
 }

@@ -22,14 +22,14 @@ object Rays {
 
     init {
         for (square in 0..63) {
-            rays[0][square] = generateRay(square, 8)   // N: 8
-            rays[1][square] = generateRay(square, 9)  // NE: 9
-            rays[2][square] = generateRay(square, 1)   // E: 1
-            rays[3][square] = generateRay(square, -7)  // SE: -7
-            rays[4][square] = generateRay(square, -8)   // S: -8
-            rays[5][square] = generateRay(square, -9)   // SW: -9
-            rays[6][square] = generateRay(square, -1)  // W: -1
-            rays[7][square] = generateRay(square, 7)  // NW: 7
+            rays[0][square] = generateRay(square, 8)
+            rays[1][square] = generateRay(square, 9)
+            rays[2][square] = generateRay(square, 1)
+            rays[3][square] = generateRay(square, -7)
+            rays[4][square] = generateRay(square, -8)
+            rays[5][square] = generateRay(square, -9)
+            rays[6][square] = generateRay(square, -1)
+            rays[7][square] = generateRay(square, 7)
         }
     }
 

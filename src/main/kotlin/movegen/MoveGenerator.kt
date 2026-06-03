@@ -52,40 +52,32 @@ object MoveGenerator {
     fun generateMoves(board: Board, color: Int): MoveList {
         val moveList = MoveList()
 
-        // Pobieramy bitboardy dla naszego koloru i przeciwnika
         val ourPieces = board.colors[color]
         val enemyPieces = board.colors[color xor 1]
         val occupancy = ourPieces or enemyPieces
 
-        // Skoczki
         generatePieceMoves(BoardConstants.PIECE_KNIGHT, board.pieces[BoardConstants.PIECE_KNIGHT], ourPieces, enemyPieces, moveList) { square ->
             KnightAttacks.attacks[square]
         }
 
-        // Król
         generatePieceMoves(BoardConstants.PIECE_KING, board.pieces[BoardConstants.PIECE_KING], ourPieces, enemyPieces, moveList) { square ->
             KingAttacks.attacks[square]
         }
 
-        // Gońce
         generatePieceMoves(BoardConstants.PIECE_BISHOP, board.pieces[BoardConstants.PIECE_BISHOP], ourPieces, enemyPieces, moveList) { square ->
             BishopAttacks.getAttacks(square, occupancy)
         }
 
-        // Wieże
         generatePieceMoves(BoardConstants.PIECE_ROOK, board.pieces[BoardConstants.PIECE_ROOK], ourPieces, enemyPieces, moveList) { square ->
             RookAttacks.getAttacks(square, occupancy)
         }
 
-        // Hetmany
         generatePieceMoves(BoardConstants.PIECE_QUEEN, board.pieces[BoardConstants.PIECE_QUEEN], ourPieces, enemyPieces, moveList) { square ->
             QueenAttacks.getAttacks(square, occupancy)
         }
 
-        // Piony (Mają zupełnie unikalną logikę)
         generatePawnMoves(board, color, enemyPieces, occupancy, moveList)
 
-        // Roszady
         generateCastlingMoves(board, color, occupancy, moveList)
 
         return moveList
@@ -109,7 +101,6 @@ object MoveGenerator {
         while (pieces != 0UL) {
             val sourceSquare = pieces.countTrailingZeroBits()
 
-            // Wywołujemy naszą lambdę, która dynamicznie lub statycznie zwróci nam ataki
             var validMoves = getAttacks(sourceSquare) and ourPieces.inv()
 
             while (validMoves != 0UL) {
@@ -119,9 +110,9 @@ object MoveGenerator {
                 val move = Move.encode(sourceSquare, targetSquare, pieceType, isCapture = isCapture)
 
                 moveList.add(move)
-                validMoves = validMoves and (validMoves - 1UL) // Gasi przeanalizowane pole docelowe
+                validMoves = validMoves and (validMoves - 1UL)
             }
-            pieces = pieces and (pieces - 1UL) // Gasi przeanalizowaną figurę
+            pieces = pieces and (pieces - 1UL)
         }
     }
 
@@ -134,10 +125,8 @@ object MoveGenerator {
     ) {
         var pawns = board.pieces[BoardConstants.PIECE_PAWN] and board.colors[color]
         
-        // Kierunek ruchu zależy od koloru (+8 dla białych do góry, -8 dla czarnych w dół)
         val direction = if (color == BoardConstants.COLOR_WHITE) 8 else -8
         
-        // Rzędy, z których pion może skoczyć o dwa pola (indeksowane od 0)
         val startingRank = if (color == BoardConstants.COLOR_WHITE) 1 else 6 
         val promotionRank = if (color == BoardConstants.COLOR_WHITE) 7 else 0
 
@@ -145,7 +134,6 @@ object MoveGenerator {
             val sourceSquare = pawns.countTrailingZeroBits()
             val row = sourceSquare / 8
             
-            // --- 1. Pchnięcia do przodu (Pushes) ---
             val singlePushSquare = sourceSquare + direction
             
             if (!Bitboard.getBit(occupancy, singlePushSquare)){
@@ -163,8 +151,6 @@ object MoveGenerator {
                 }
             }
 
-            // --- 2. Bicia standardowe ---
-            // Wyciągamy pre-kalkulowane ataki piona i sprawdzamy, czy w ich miejscu stoi wróg
             var attacks = PawnAttacks.attacks[color][sourceSquare] and enemyPieces
             
             while (attacks != 0UL) {
@@ -179,7 +165,6 @@ object MoveGenerator {
                 attacks = attacks and (attacks - 1UL) 
             }
             
-            // --- 3. Bicie w przelocie (En Passant) ---
             val epSquare = board.stateHistory[board.currentHalfMove].enPassantSquare
             if(epSquare != -1){
                 val attacks = PawnAttacks.attacks[color][sourceSquare]
@@ -192,7 +177,6 @@ object MoveGenerator {
     }
 
     private fun addPromotionMoves(sourceSquare: Int, targetSquare: Int, isCapture: Boolean, moveList: MoveList) {
-        // Przy promocji generujemy 4 osobne ruchy (zamiana na Hetmana, Wieżę, Gońca i Skoczka)
         moveList.add(Move.encode(sourceSquare, targetSquare, BoardConstants.PIECE_PAWN, promotedPiece = BoardConstants.PIECE_QUEEN, isCapture = isCapture))
         moveList.add(Move.encode(sourceSquare, targetSquare, BoardConstants.PIECE_PAWN, promotedPiece = BoardConstants.PIECE_ROOK, isCapture = isCapture))
         moveList.add(Move.encode(sourceSquare, targetSquare, BoardConstants.PIECE_PAWN, promotedPiece = BoardConstants.PIECE_BISHOP, isCapture = isCapture))

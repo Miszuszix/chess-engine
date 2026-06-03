@@ -6,11 +6,9 @@ package board
  * oraz indeksów 64 pól szachownicy w celu uniknięcia "magicznych liczb" w kodzie.
  */
 object BoardConstants {
-    // Colors
     const val COLOR_WHITE = 0
     const val COLOR_BLACK = 1
 
-    // Piece Types
     const val PIECE_PAWN = 0
     const val PIECE_KNIGHT = 1
     const val PIECE_BISHOP = 2
@@ -18,7 +16,6 @@ object BoardConstants {
     const val PIECE_QUEEN = 4
     const val PIECE_KING = 5
 
-    // Squares
     const val SQUARE_A1 = 0
     const val SQUARE_B1 = 1
     const val SQUARE_C1 = 2
@@ -91,8 +88,6 @@ object BoardConstants {
     const val SQUARE_G8 = 62
     const val SQUARE_H8 = 63
 
-    // Tablica masek do bezwarunkowej aktualizacji praw do roszady.
-    // Wartość 15 (1111) oznacza brak zmiany. Inne wartości gaszą odpowiednie bity.
     val CASTLING_RIGHTS_UPDATE = IntArray(64) { 15 }.apply {
         this[SQUARE_A1] = 13
         this[SQUARE_H1] = 14

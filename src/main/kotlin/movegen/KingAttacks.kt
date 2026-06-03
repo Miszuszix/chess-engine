@@ -20,9 +20,6 @@ object KingAttacks {
         }
     }
 
-    /**
-     * Generuje maskę ataków króla dla danego pola na szachownicy.
-     */
     private fun maskKingAttacks(square: Int): ULong {
         var attacksBoard = 0UL
         var bitboard = 0UL
