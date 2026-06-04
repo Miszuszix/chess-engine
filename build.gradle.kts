@@ -25,3 +25,14 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
         freeCompilerArgs.add("-opt-in=kotlin.ExperimentalUnsignedTypes")
     }
 }
+tasks.jar {
+    manifest {
+        attributes["Main-Class"] = "MainKt"
+    }
+
+    val dependencies = configurations.runtimeClasspath.get().map {
+        if (it.isDirectory) it else zipTree(it)
+    }
+    from(dependencies)
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
