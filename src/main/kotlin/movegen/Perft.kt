@@ -18,7 +18,7 @@ object Perft {
      * @param depth Głębokość, na którą chcemy jeszcze zejść.
      * @return Liczba unikalnych, legalnych pozycji z węzłów liści (na samym dole).
      */
-    private fun perftDriver(board: Board, depth: Int): Long {
+    fun perftDriver(board: Board, depth: Int): Long {
         if (depth == 0) return 1L
 
         var nodes = 0L

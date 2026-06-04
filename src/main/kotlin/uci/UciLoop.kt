@@ -4,6 +4,7 @@ import board.Board
 import java.util.Scanner
 import movegen.MoveGenerator
 import board.Move
+import search.Search
 
 /**
  * Główna pętla komunikacyjna silnika.
@@ -38,7 +39,8 @@ object UciLoop {
                     parsePosition(board, line)
                 }
                 "go" -> {
-                    println("bestmove 0000")
+                    val bestMove = Search.searchPosition(board, 5)
+                    println("bestmove ${Move.moveToUciString(bestMove)}")
                 }
                 "quit" -> {
                     return
