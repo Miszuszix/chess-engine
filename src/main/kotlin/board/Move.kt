@@ -54,6 +54,38 @@ object Move {
         return result
     }
 
+
+    /**
+     * Konwertuje skompresowany 32-bitowy ruch na format tekstowy UCI (np. "e2e4", "e7e8q").
+     * Protokół UCI wymaga podania wyłącznie pola startowego, docelowego i ewentualnej promocji.
+     *
+     * @param move Skompresowany ruch w postaci liczby [Int].
+     * @return Reprezentacja tekstowa ruchu zgodna ze standardem UCI.
+     */
+    fun moveToUciString(move: Int): String {
+        val source = Move.getSourceSquare(move)
+        val target = Move.getTargetSquare(move)
+        val promotedPiece = Move.getPromotedPiece(move)
+
+        val sourceColumn = 'a' + (source % 8)
+        val sourceRow = (source / 8) + 1
+        val targetColumn = 'a' + (target % 8)
+        val targetRow = (target / 8) + 1
+
+        var uci = "$sourceColumn$sourceRow$targetColumn$targetRow"
+
+        if (promotedPiece != 0) {
+            uci += when (promotedPiece) {
+                BoardConstants.PIECE_KNIGHT -> "n"
+                BoardConstants.PIECE_BISHOP -> "b"
+                BoardConstants.PIECE_ROOK -> "r"
+                BoardConstants.PIECE_QUEEN -> "q"
+                else -> ""
+            }
+        }
+        return uci
+    }
+
     /**
      * Ekstrahuje indeks pola źródłowego z zakodowanego ruchu.
      * @param move Zakodowany ruch.
