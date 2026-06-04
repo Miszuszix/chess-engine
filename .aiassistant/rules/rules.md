@@ -30,7 +30,7 @@ używając masek brzegowych (np. `notAFile`, `notHFile`) do unikania zjawiska "w
 - Cofanie ruchów (Make/Unmake): ZAKAZ używania słowników/Map. Prawa do roszady, en-passant i regułę 50 ruchów trzymamy w lekkiej klasie `StateInfo` ułożonej w płaskiej tablicy lub na stosie (Stack) indeksowanym numerem półruchu (ply). Aktualizację praw do roszady wykonujemy bezwarunkowo za pomocą pre-kalkulowanych tablic z maskami bitowymi. Przy funkcji `unmakeMove` bezwzględnie unikamy kopiowania stanu - po prostu zmniejszamy wskaźnik głębokości (`ply--`).
 
 ## Search and AI
-- Główny algorytm: Minimax z odcięciami Alpha-Beta.
+- Główny algorytm: Negamax z odcięciami Alpha-Beta. Rozdzielamy funkcję Root (`searchPosition`) od rekurencji (`negamax`), aby funkcja rekurencyjna zwracała tylko typ prymitywny `Int` (ocenę) i nie alokowała na stercie (Heap) obiektów dla par wynik-ruch.
 - Rozwiązanie "Efektu Horyzontu": W późniejszej fazie dodamy Quiescence Search (przeszukiwanie spoczynkowe dla ostrych wymian/bić).
 - Pamięć podręczna: Transposition Tables (Zobrist Hashing). Limit pamięci RAM na tablice: 64MB - 128MB (ze względu na specyfikację laptopa).
 - Zarządzanie czasem: Iterative Deepening. Silnik szuka głębiej z każdą iteracją i sam inteligentnie zarządza czasem (krócej dla oczywistych ruchów, dłużej dla skomplikowanych).
@@ -39,7 +39,7 @@ używając masek brzegowych (np. `notAFile`, `notHFile`) do unikania zjawiska "w
 
 ## Evaluation Strategy
 - Fazy gry: Silnik musi rozróżniać grę środkową (Midgame) od końcówki (Endgame) na podstawie liczby figur na planszy.
-- Ocena materiału: Standardowe liczenie punktów za figury (Pion=100, Skoczek=300 itd.).
+- Ocena materiału: Standardowe liczenie punktów za figury (Pion=100, Skoczek=300 itd.). Do zliczania figur bezwzględnie używamy wydajnej funkcji `.countOneBits()`.
 - Pozycjonowanie: Piece-Square Tables (PST). W końcówce zmieniają się tablice dla Króla, wymuszając jego marsz do centrum planszy.
 
 ## Coding Standards and Git

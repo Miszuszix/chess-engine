@@ -36,23 +36,23 @@ apply: always
 
 ---
 
-## Faza 3: Protokół UCI i Pierwsza Gra 🟡 (W TRAKCIE)
+## Faza 3: Protokół UCI i Pierwsza Gra 🟢 (ZAKOŃCZONO)
 *Komunikacja ze światem zewnętrznym i umożliwienie rozgrywki przez GUI (np. CuteChess).*
 
-- 🔴 **Pętla UCI:** Implementacja nasłuchiwania w konsoli na komendy `uci`, `isready`, `position`, `go`.
-- 🔴 **Budowanie z FEN:** Funkcja umożliwiająca zbudowanie stanu `Board` na podstawie tekstowego stringa FEN.
-- 🔴 **Podstawowy Minimax:** Szkielet algorytmu przeszukującego w głąb w celu znalezienia jakiegokolwiek logicznego ruchu.
-- 🔴 **Kamień Milowy:** Podpięcie skompilowanego Fat JAR pod CuteChess i rozegranie pełnej (nawet bardzo słabej) partii szachowej na silniku.
+- 🟢 **Pętla UCI:** Implementacja nasłuchiwania w konsoli na komendy `uci`, `isready`, `position`, `go` (plik `UciLoop.kt`).
+- 🟢 **Budowanie z FEN:** Funkcja `loadFromFen` w `Board.kt` odtwarzająca stan z tekstowego stringa.
+- 🟢 **Podstawowy Minimax:** Główny algorytm Negamax zaimplementowany w `Search.kt`.
+- 🟢 **Kamień Milowy:** Podpięcie skompilowanego Fat JAR pod CuteChess i pomyślne rozegranie pierwszej partii!
 
 ---
 
-## Faza 4: Ewaluacja i Usprawnienie Przeszukiwania 🔴 (NIE ROZPOCZĘTO)
+## Faza 4: Ewaluacja i Usprawnienie Przeszukiwania 🟡 (W TRAKCIE)
 *Nadanie silnikowi "rozumu" poprzez stworzenie funkcji oceniającej (heurystyki) oraz przyspieszenie szukania ruchów.*
 
-- 🔴 **Ocena Materiału:** Obliczanie bilansu punktowego pozycji.
+- 🟢 **Ocena Materiału:** Obliczanie bilansu punktowego pozycji z użyciem sprzętowego `.countOneBits()`.
 - 🔴 **Piece-Square Tables (PST):** Tablice nagradzające figury za zajmowanie dobrych pól.
 - 🔴 **Rozróżnienie Midgame / Endgame:** Interpolacja wartości tablic w zależności od materiału na planszy.
-- 🔴 **Odcięcia Alpha-Beta (Alpha-Beta Pruning):** Dodanie matematyki odcinającej złe warianty w drzewie.
+- 🟢 **Odcięcia Alpha-Beta (Alpha-Beta Pruning):** Zintegrowane z funkcją Negamax.
 - 🔴 **Sortowanie Ruchów (Move Ordering):** Wdrażanie MVV-LVA (najcenniejsza ofiara, najmniej wartościowy atakujący), co ekstremalnie przyspieszy Alpha-Betę.
 - 🔴 **Quiescence Search:** Przeszukiwanie spoczynkowe likwidujące "Efekt Horyzontu" po gwałtownych wymianach.
 
