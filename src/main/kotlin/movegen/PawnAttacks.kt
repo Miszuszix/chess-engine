@@ -47,8 +47,8 @@ object PawnAttacks {
             attacksBoard = attacksBoard or ((bitboard and notHFile) shl 9)
         }
         if (color == BoardConstants.COLOR_BLACK){
-            attacksBoard = attacksBoard or ((bitboard and notAFile) shr 7)
-            attacksBoard = attacksBoard or ((bitboard and notHFile) shr 9)
+            attacksBoard = attacksBoard or ((bitboard and notHFile) shr 7)
+            attacksBoard = attacksBoard or ((bitboard and notAFile) shr 9)
         }
 
         return attacksBoard
