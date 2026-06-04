@@ -22,7 +22,7 @@ apply: always
 
 ---
 
-## Faza 2: Generator Ruchów "Pseudo-Legal" i Perft 🟡 (W TRAKCIE)
+## Faza 2: Generator Ruchów "Pseudo-Legal" i Perft 🟢 (ZAKOŃCZONO)
 *Magia szachowa. Generowanie wszystkich możliwych ruchów na planszy. Na tym etapie silnik uczy się "jak poruszają się figury".*
 
 - 🟢 **Ataki Skoczka:** Plik `KnightAttacks.kt` - Pre-computed tablica ataków z uwzględnieniem masek chroniących przed "wrap-around".
@@ -32,11 +32,11 @@ apply: always
 - 🟢 **Funkcja `isSquareAttacked`:** Ocenianie, czy dane pole jest aktualnie atakowane przez określony kolor.
 - 🟢 **Generator Ruchów (Główny):** Właściwa logika tworząca listy zakodowanych ruchów (z użyciem obiektu `Move`) dla danej pozycji w oparciu o stan `Board.kt`.
 - 🟢 **Mechanizm Make / Unmake:** Funkcje `makeMove` i `unmakeMove` są w 100% gotowe i udokumentowane.
-- 🟡 **Weryfikacja PERFT:** Test jednostkowy przechodzący głębokie węzły na pozycjach testowych (wymagane w 100% zgodności ze standardami przed pójściem dalej).
+- 🟢 **Weryfikacja PERFT:** Silnik bezbłędnie przechodzi testy wydajnościowe i poprawnościowe (np. 4 865 609 węzłów dla głębokości 5 z pozycji startowej). Błędy debugowane były z sukcesem techniką Perft Divide.
 
 ---
 
-## Faza 3: Protokół UCI i Pierwsza Gra 🔴 (NIE ROZPOCZĘTO)
+## Faza 3: Protokół UCI i Pierwsza Gra 🟡 (W TRAKCIE)
 *Komunikacja ze światem zewnętrznym i umożliwienie rozgrywki przez GUI (np. CuteChess).*
 
 - 🔴 **Pętla UCI:** Implementacja nasłuchiwania w konsoli na komendy `uci`, `isready`, `position`, `go`.

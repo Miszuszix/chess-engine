@@ -104,6 +104,7 @@ class Board {
                 if(Bitboard.getBit(pieces[capturedPiece], target)){
                     nextState.capturedPiece = capturedPiece
                     removePiece(target, capturedPiece, sideToMove xor 1)
+                    break
                 }
             }
         }

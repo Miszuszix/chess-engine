@@ -17,7 +17,7 @@ Projekt to zadanie na turniej uczelniany, więc muszę rozumieć każdą linijk�
 - Język: Czysty Kotlin (JVM). 
 - Zależności: ZAKAZ używania zewnętrznych bibliotek i frameworków. Dopuszczalny jedynie JUnit do testów jednostkowych.
 - Kompilacja: Budujemy projekt jako Fat JAR, aby móc go łatwo podpiąć z terminala pod GUI.
-- Interfejs/GUI do testów: Używamy standardowego protokołu tekstowego UCI. Testujemy silnik w aplikacji CuteChess.
+- Interfejs/GUI do testów: Używamy standardowego protokołu tekstowego UCI. Testujemy silnik w aplikacji CuteChess. Komunikacja ze światem zewnętrznym odbywa się WYŁĄCZNIE w standardzie UCI (np. `e2e4`, `e7e8q`). ZAKAZ używania notacji SAN (np. `Nxf3`), ponieważ utrudnia to parsowanie i jest niezgodne z protokołem.
 
 ## Board Logic Architecture
 - Reprezentacja planszy: Bitboards, wykorzystując natywny typ `ULong` (64-bity). To absolutny priorytet wydajnościowy.
@@ -26,7 +26,7 @@ Generujemy wszystkie możliwe ruchy, a legalność sprawdzamy dopiero po wykonan
 - Technika Pre-computing: Dla figur skokowych (Skoczek, Król, ataki Pionów) ataki obliczamy Z GÓRY przy starcie silnika i trzymamy w tablicach,
 używając masek brzegowych (np. `notAFile`, `notHFile`) do unikania zjawiska "wrap-around".
 - Generowanie figur liniowych: Będziemy używać prostszego podejścia promieni (Ray Casting / Shift-based) zamiast Magic Bitboards, co jest wystarczające na nasz cel ELO.
-- Weryfikacja: Wymagane bezbłędne przejście testów węzłów `Perft`.
+- Weryfikacja i Debugowanie: Wymagane bezbłędne przejście testów węzłów `Perft`. W przypadku rozbieżności węzłów stosujemy technikę **Perft Divide** (wypisywanie liczby wariantów dla każdego ruchu bazowego) w celu błyskawicznej izolacji błędnej gałęzi w drzewie.
 - Cofanie ruchów (Make/Unmake): ZAKAZ używania słowników/Map. Prawa do roszady, en-passant i regułę 50 ruchów trzymamy w lekkiej klasie `StateInfo` ułożonej w płaskiej tablicy lub na stosie (Stack) indeksowanym numerem półruchu (ply). Aktualizację praw do roszady wykonujemy bezwarunkowo za pomocą pre-kalkulowanych tablic z maskami bitowymi. Przy funkcji `unmakeMove` bezwzględnie unikamy kopiowania stanu - po prostu zmniejszamy wskaźnik głębokości (`ply--`).
 
 ## Search and AI

@@ -49,7 +49,7 @@ object Perft {
      * @param depth Głębokość testu.
      */
     fun perftTest(board: Board, depth: Int) {
-        println("Rozpoczynam test PERFT dla głębokości: $depth")
+        println("Rozpoczynam test PERFT dla glebokosci: $depth")
         
         var totalNodes = 0L
         val startTime = System.currentTimeMillis()
