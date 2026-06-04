@@ -2,14 +2,10 @@ import board.Board
 import board.BoardConstants
 import board.Move
 import movegen.Perft
+import uci.UciLoop
 
 fun main() {
-    val board = Board()
-    setupStandardPosition(board)
-    
-    // Odpalamy test na głębokość 5. 
-    // Prawidłowy wynik dla tej głębokości to dokładnie 4 865 609 węzłów!
-    Perft.perftTest(board, 6)
+    UciLoop.loop()
 }
 
 /**
