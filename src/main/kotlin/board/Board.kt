@@ -66,6 +66,86 @@ class Board {
     }
 
     /**
+     * Czyści całkowicie szachownicę.
+     * Przygotowuje ją do wczytania nowej pozycji (np. z FEN).
+     */
+    fun clear() {
+        for (i in 0..5) pieces[i] = 0UL
+        for (i in 0..1) colors[i] = 0UL
+        currentHalfMove = 0
+        sideToMove = BoardConstants.COLOR_WHITE
+        stateHistory[0] = StateInfo()
+    }
+
+    /**
+     * Wczytuje stan szachownicy ze standardowego formatu FEN.
+     * 
+     * @param fen String w formacie Forsyth-Edwards Notation.
+     */
+    fun loadFromFen(fen: String) {
+        clear()
+        
+        val parts = fen.trim().split("\\s+".toRegex())
+        if (parts.isEmpty()) return
+
+        // 1. Rozparsowanie ułożenia figur
+        val boardPart = parts[0]
+        var square = 56
+        for (i in boardPart.indices){
+            if(boardPart[i] == '/'){
+                square -= 16
+                continue
+            }
+            if(boardPart[i].code in 48..57){
+                square += boardPart[i].digitToInt()
+                continue
+            }else{
+                setPiece(
+                    square,
+                    when(boardPart[i].lowercaseChar()){
+                        'p' -> PIECE_PAWN
+                        'n' -> PIECE_KNIGHT
+                        'b' -> PIECE_BISHOP
+                        'r' -> PIECE_ROOK
+                        'q' -> PIECE_QUEEN
+                        'k' -> PIECE_KING
+                        else -> 0
+                    },
+                    if(boardPart[i].isUpperCase()) BoardConstants.COLOR_WHITE else BoardConstants.COLOR_BLACK
+                )
+            }
+            square++
+        }
+        
+        // 2. Kto ma ruch
+        sideToMove = if(parts[1] == "w") BoardConstants.COLOR_WHITE else BoardConstants.COLOR_BLACK
+        
+        // 3. Prawa do roszady
+        var castlingRights = 0
+        for (i in parts[2]){
+            when(i){
+                'K' -> castlingRights = castlingRights or 1
+                'Q' -> castlingRights = castlingRights or 2
+                'k' -> castlingRights = castlingRights or 4
+                'q' -> castlingRights = castlingRights or 8
+            }
+        }
+        stateHistory[currentHalfMove].castlingRights = castlingRights
+
+        // 4. Bicie w przelocie (En Passant)
+        if(parts[3] != "-"){
+            val column = parts[3][0] - 'a'
+            val row = parts[3][1] - '1'
+            stateHistory[currentHalfMove].enPassantSquare = row * 8 + column
+        }
+
+        // 5. Licznik 50-ruchów
+        if (parts.size >= 5) {
+            stateHistory[currentHalfMove].halfMoveClock = parts[4].toInt()
+        }
+    }
+
+    /**
      * Wykonuje podany ruch na planszy modyfikując jej stan (Make Move).
      * Aktualizuje bitboardy, zapisuje nowy stan w historii ([stateHistory]) i przekazuje turę przeciwnikowi.
      *
