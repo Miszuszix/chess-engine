@@ -2,6 +2,7 @@ package search
 
 import board.Board
 import board.BoardConstants
+import board.Move
 import board.Move.moveToUciString
 import evaluation.Evaluation
 import movegen.MoveGenerator
@@ -19,12 +20,19 @@ object Search {
     /**
      * Główna funkcja rozpoczynająca przeszukiwanie (tzw. Root).
      * Szuka najlepszego ruchu dla aktualnego gracza na podaną głębokość.
+     * Podczas przeszukiwania, wysyła na standardowe wyjście informacje w formacie UCI (`info ...`).
      *
      * @param board Szachownica w aktualnej pozycji.
      * @param depth Głębokość, na jaką chcemy przeszukać drzewo gry.
      * @return 32-bitowy kod najlepszego ruchu.
      */
+
+    var nodes = 0L
+
     fun searchPosition(board: Board, depth: Int): Int {
+        val startTime = System.currentTimeMillis()
+        nodes = 0L
+
         var bestMove = 0
         var alpha = -INFINITY
         val beta = INFINITY
@@ -51,6 +59,12 @@ object Search {
             }
         }
 
+        val timeMs = System.currentTimeMillis() - startTime
+        val nps = (nodes / (timeMs.coerceAtLeast(1) / 1000.0)).toLong()
+
+        val stats = "info depth $depth score cp $alpha nodes $nodes nps $nps time $timeMs pv " + Move.moveToUciString(bestMove)
+        println(stats)
+
         return bestMove
     }
 
@@ -64,6 +78,7 @@ object Search {
      * @return Ocena pozycji w centypionach.
      */
     private fun negamax(board: Board, depth: Int, alpha: Int, beta: Int): Int {
+        nodes++
         if (depth == 0) {
             val evaluation = Evaluation.evaluate(board)
             val scoreMultiplier = if (board.sideToMove == BoardConstants.COLOR_WHITE) 1 else -1
