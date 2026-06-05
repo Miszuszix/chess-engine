@@ -11,13 +11,14 @@ Projekt to zadanie na turniej uczelniany, więc muszę rozumieć każdą linijk�
 - Cel: Silnik szachowy w kategorii "Algorytmy Przeszukiwania" osiągający ~1000-1400 ELO.
 - Sprzęt docelowy (turniejowy): Laptop z procesorem AMD Ryzen 4500U, 8GB RAM, zintegrowana grafika. Optymalizujemy pamięć pod ten sprzęt.
 - Środowisko pracy: Linux (Omarchy) + Wayland, IDE: IntelliJ IDEA.
-- Metodyka pracy: Agile / "Szybkie iteracje". Robimy kod, dopóki działa. Jeśli gdzieś utknę na zbyt długo, daję znać i upraszczamy podejście.
+- Metodyka pracy: Agile / "Szybkie iteracje". Robimy kod, dopóki działa. Trzymamy się Javy 25 (Early Access). Silnik budujemy do pliku `mrufka.jar`.
 
 ## Tech Stack
 - Język: Czysty Kotlin (JVM). 
 - Zależności: ZAKAZ używania zewnętrznych bibliotek i frameworków. Dopuszczalny jedynie JUnit do testów jednostkowych.
 - Kompilacja: Budujemy projekt jako Fat JAR, aby móc go łatwo podpiąć z terminala pod GUI.
 - Interfejs/GUI do testów: Używamy standardowego protokołu tekstowego UCI. Testujemy silnik w aplikacji CuteChess. Komunikacja ze światem zewnętrznym odbywa się WYŁĄCZNIE w standardzie UCI (np. `e2e4`, `e7e8q`). ZAKAZ używania notacji SAN (np. `Nxf3`), ponieważ utrudnia to parsowanie i jest niezgodne z protokołem.
+Podczas przeszukiwania silnik musi na bieżąco wysyłać strumień statystyk (komenda `info depth... nodes... nps... pv...`).
 
 ## Board Logic Architecture
 - Reprezentacja planszy: Bitboards, wykorzystując natywny typ `ULong` (64-bity). To absolutny priorytet wydajnościowy.
@@ -34,7 +35,8 @@ używając masek brzegowych (np. `notAFile`, `notHFile`) do unikania zjawiska "w
 - Rozwiązanie "Efektu Horyzontu": W późniejszej fazie dodamy Quiescence Search (przeszukiwanie spoczynkowe dla ostrych wymian/bić).
 - Pamięć podręczna: Transposition Tables (Zobrist Hashing). Limit pamięci RAM na tablice: 64MB - 128MB (ze względu na specyfikację laptopa).
 - Zarządzanie czasem: Iterative Deepening. Silnik szuka głębiej z każdą iteracją i sam inteligentnie zarządza czasem (krócej dla oczywistych ruchów, dłużej dla skomplikowanych).
-- Sortowanie ruchów (Move Ordering): Wdrażamy statyczną heurystykę zbić MVV-LVA (Most Valuable Victim - Least Valuable Attacker).
+- Sortowanie ruchów (Move Ordering): Wdrażamy statyczną heurystykę zbić MVV-LVA (Most Valuable Victim - Least Valuable Attacker). 
+**ZŁOTA ZASADA ROZWOJU:** Zawsze najpierw optymalizujemy szerokość drzewa (MVV-LVA), zanim zaczniemy optymalizować głębokość (czas i Iterative Deepening).
 - Faza otwarć: Obsługa gotowych książek otwarć w formacie Polyglot (`.bin`). Silnik nie wykorzystuje uczenia maszynowego (zakaz NN).
 
 ## Evaluation Strategy

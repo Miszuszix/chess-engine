@@ -43,6 +43,7 @@ apply: always
 - 🟢 **Budowanie z FEN:** Funkcja `loadFromFen` w `Board.kt` odtwarzająca stan z tekstowego stringa.
 - 🟢 **Podstawowy Minimax:** Główny algorytm Negamax zaimplementowany w `Search.kt`.
 - 🟢 **Kamień Milowy:** Podpięcie skompilowanego Fat JAR pod CuteChess i pomyślne rozegranie pierwszej partii!
+- 🟢 **Statystyki UCI:** Silnik wysyła raporty o postępach (`info depth... score... nodes... nps... time... pv...`), co umożliwia podgląd jego myślenia w GUI.
 
 ---
 
@@ -53,7 +54,7 @@ apply: always
 - 🔴 **Piece-Square Tables (PST):** Tablice nagradzające figury za zajmowanie dobrych pól.
 - 🔴 **Rozróżnienie Midgame / Endgame:** Interpolacja wartości tablic w zależności od materiału na planszy.
 - 🟢 **Odcięcia Alpha-Beta (Alpha-Beta Pruning):** Zintegrowane z funkcją Negamax.
-- 🔴 **Sortowanie Ruchów (Move Ordering):** Wdrażanie MVV-LVA (najcenniejsza ofiara, najmniej wartościowy atakujący), co ekstremalnie przyspieszy Alpha-Betę.
+- 🟡 **Sortowanie Ruchów (Move Ordering):** Wdrażanie MVV-LVA. Zgodnie z ustaleniami, optymalizacja szerokości drzewa jest absolutnym priorytetem przed wdrożeniem Iterative Deepening.
 - 🔴 **Quiescence Search:** Przeszukiwanie spoczynkowe likwidujące "Efekt Horyzontu" po gwałtownych wymianach.
 
 ---
